@@ -1,4 +1,5 @@
 import json
+import secrets
 import subprocess
 from datetime import date
 
@@ -8,24 +9,74 @@ with open('data.txt') as f:
 wrong_attempt = 0
 countdownamount = 0
 while True:
-    username = input("Enter your username: ")
-    password = input("Enter your password: ")
-
-    if username in users and users[username]["password"] == password:
-        print("Login successful! You are logged in as", username, "." , "Your balance is", users[username]["balance"])
+    account_action = input("1. Login\n2. Create account\n0. Exit\nSelect an option: ")
+    if account_action in ("1", "2", "0"):
         break
-    else:
-        
-        wrong_attempt += 1
-        print("Invalid username or password. Incorrect attempts:", wrong_attempt)
-        if wrong_attempt == 3:
-            print("You are blocked for 60 seconds!")
-            subprocess.run(["python", "time.py"])
-            wrong_attempt = 0
-            countdownamount += 1
-            if countdownamount == 2:
-                        print("You have exceeded the maximum number of attempts. Your card has been blocked. Please contact the bank for administrator.")
-                        break
+    print("Invalid selection. Please choose 1, 2, or 0.")
+
+if account_action == "0":
+    print("Exiting the program. Goodbye <3")
+    raise SystemExit
+
+if account_action == "2":
+    while True:
+        username = input("Choose a username: ").strip()
+        if not username:
+            print("Username cannot be empty.")
+        elif username in users:
+            print("That username already exists. Please choose another.")
+        else:
+            break
+
+    while True:
+        password = input("Choose a password: ")
+        if not password:
+            print("Password cannot be empty.")
+            continue
+        if password != input("Confirm your password: "):
+            print("Passwords do not match. Please try again.")
+            continue
+        break
+
+    account_number = str(secrets.randbelow(900000) + 100000)
+    existing_account_numbers = {
+        str(user.get("account_number", user.get("accountnum", "")))
+        for user in users.values()
+    }
+    while account_number in existing_account_numbers:
+        account_number = str(secrets.randbelow(900000) + 100000)
+
+    users[username] = {
+        "password": password,
+        "balance": 0.0,
+        "account_number": account_number,
+        "daily_limit": 2000,
+        "daily_deposits": {},
+        "daily_withdrawal_limit": 1000,
+    }
+    with open('data.txt', 'w') as f:
+        json.dump(users, f, indent=4)
+    print("Account created successfully! You are logged in as", username,
+          ". Your account number is", account_number)
+else:
+    while True:
+        username = input("Enter your username: ")
+        password = input("Enter your password: ")
+
+        if username in users and users[username]["password"] == password:
+            print("Login successful! You are logged in as", username, "." , "Your balance is", users[username]["balance"])
+            break
+        else:
+            wrong_attempt += 1
+            print("Invalid username or password. Incorrect attempts:", wrong_attempt)
+            if wrong_attempt == 3:
+                print("You are blocked for 60 seconds!")
+                subprocess.run(["python", "time.py"])
+                wrong_attempt = 0
+                countdownamount += 1
+                if countdownamount == 2:
+                    print("You have exceeded the maximum number of attempts. Your card has been blocked. Please contact the bank for administrator.")
+                    raise SystemExit
 
 
 

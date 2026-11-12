@@ -1,26 +1,29 @@
 {
     "cingiz": {
-        "password": "12345",
+        "password": "cingiz66",
         "balance": 5988.0,
         "account_number": "098372",
         "daily_limit": 2000,
         "daily_deposits": {
             "2026-11-01": 2000.0
         },
+        "transaction_history": [],
         "daily_withdrawal_limit": 600.0
     },
     "ayan": {
-        "password": "67890",
+        "password": "ayan2009",
         "balance": 14000,
         "daily_limit": 2000,
         "daily_withdrawal_limit": 1000,
-        "accountnum": 783724
+        "accountnum": 783724,
+        "transaction_history": []
     },
     "zeyneb": {
-        "password": "abc123",
+        "password": "zeynebb2009",
         "balance": 2000,
         "daily_limit": 2000,
         "daily_withdrawal_limit": 1000,
-        "accountnum": 21653478
+        "accountnum": 21653478,
+        "transaction_history": []
     }
 }

@@ -6,17 +6,17 @@ with open('data.txt') as f:
     users = json.load(f)
 
 transactionamount = 0
-wrong_attempt = 0
-countdownamount = 0
-while True:
-    username = input("Enter your username: ")
-    password = input("Enter your password: ")
+def authenticate():
+    wrong_attempt = 0
+    countdownamount = 0
+    while True:
+        username = input("Enter your username: ")
+        password = input("Enter your password: ")
 
-    if username in users and users[username]["password"] == password:
-        print("Login successful! You are logged in as", username, "." , "Your balance is", users[username]["balance"])
-        break
-    else:
-        
+        if username in users and users[username]["password"] == password:
+            print("Login successful! You are logged in as", username, ".", "Your balance is", users[username]["balance"])
+            return username
+
         wrong_attempt += 1
         print("Invalid username or password. Incorrect attempts:", wrong_attempt)
         if wrong_attempt == 3:
@@ -25,13 +25,18 @@ while True:
             wrong_attempt = 0
             countdownamount += 1
             if countdownamount == 2:
-                        print("You have exceeded the maximum number of attempts. Your card has been blocked. Please contact the bank for administrator.")
-                        break
+                print("You have exceeded the maximum number of attempts. Your card has been blocked. Please contact the bank for administrator.")
+                return None
+
+
+username = authenticate()
+if username is None:
+    raise SystemExit
 
 
 
 while True:
-    print("====================================          PYTHON BANKING SYSTEM ==================================== Welcome, user01! " + "\n" + "1. View Account Information" + "\n" + "2. Check Balance" + "\n" + "3. Deposit Money" + "\n" + "4. Withdraw Money" + "\n" + "5. Transfer Money" + "\n" + "6. Transaction History" + "\n" + "7. Daily Limits" + "\n" + "8. Change Password" + "\n" + "9. Logout" + "\n" + "0. Exit" + "\n" + "==================================== Select an option:")
+    print("====================================          PYTHON BANKING SYSTEM ==================================== Welcome, " + username + "! " + "\n" + "1. View Account Information" + "\n" + "2. Check Balance" + "\n" + "3. Deposit Money" + "\n" + "4. Withdraw Money" + "\n" + "5. Transfer Money" + "\n" + "6. Transaction History" + "\n" + "7. Daily Limits" + "\n" + "8. Change Password" + "\n" + "9. Logout" + "\n" + "0. Exit" + "\n" + "==================================== Select an option:")
     userselection = input("Enter your selection: ")
 
     if userselection == "1":
@@ -111,6 +116,31 @@ while True:
                 )
         print("press enter to return to the main menu")
         input()
+
+    elif userselection == "8":
+        current_password = input("Enter your current password: ")
+        if current_password != users[username]["password"]:
+            print("Current password is incorrect.")
+        else:
+            new_password = input("Enter your new password: ")
+            confirm_password = input("Confirm your new password: ")
+            if not new_password:
+                print("Password cannot be empty.")
+            elif new_password != confirm_password:
+                print("Passwords do not match. Password was not changed.")
+            else:
+                users[username]["password"] = new_password
+                with open('data.txt', 'w') as f:
+                    json.dump(users, f, indent=4)
+                print("Password changed successfully.")
+        print("press enter to return to the main menu")
+        input()
+
+    elif userselection == "9":
+        print("You have been logged out.")
+        username = authenticate()
+        if username is None:
+            break
 
     elif userselection == "0":
         print("Exiting the program. Goodbye..")
